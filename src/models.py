@@ -9,62 +9,43 @@ from eralchemy import render_er
 Base = declarative_base()
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    username = Column(String(30), nullable=False)
-    password = Column(String(250), nullable=False)
-    fullname = Column(String(250), nullable=True)
-    email = Column(String(250), nullable=False)
-    phone_num = Column(Integer, nullable=False)
-    profile_pic_url = Column(String(250), nullable=False)
-
-class Follower(Base):
-    __tablename__ = 'followers'
-    timestamp = Column(String(250), nullable=False)  
-    denayorrejectoption = Column(String(250), nullable=True) 
-    follower_status = Column(String(250), nullable=False)  
-    follower_id = Column(Integer, ForeignKey('users.id'),primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'),primary_key=True)
-    follower = relationship(User)
-    user = relationship(User)
-
+    username = Column(String(250))
+    firstname = Column(String(250))
+    lastname = Column(String(250))
+    email = Column(String(250))
 
 class Post(Base):
-    __tablename__ = 'posts'
+    __tablename__ = 'post'
     id = Column(Integer, primary_key=True)
-    photo_id = Column(String(250), nullable=False)
-    img_url = Column(String(250), nullable=False)
-    timestamp = Column(String(250), nullable=False)
-    pic_descrition = Column(String(250), nullable=True)
-    location = Column(String(250), nullable=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship(User)
+    user_id = Column(Integer, ForeignKey('user.id'))
+
+class MyEnum(enum.Enum):
+    one = "Video"
+    two = "Photo"
+    three = "Story"
+
+class Media(Base):
+    __tablename__ = 'media'
+    id = Column(Integer, primary_key=True)
+    type = Column(Enum(MyEnum))
+    url = Column(String(250))
+    post_id = Column(Integer, ForeignKey('post.id'))
 
 class Comment(Base):
-    __tablename__ = 'comments'
+    __tablename__ = 'comment'
     id = Column(Integer, primary_key=True)
-    photo_id = Column(Integer, nullable=False)
-    comment = Column(String(250), nullable=True)
-    img_url = Column(String(250), nullable=False)
-    timestamp = Column(String(250), nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship(User)
-    posts_id = Column(Integer, ForeignKey('posts.id'))
-    posts = relationship(Post)
+    comment_text = Column(String(250))
+    author_id = Column(Integer, ForeignKey('user.id'))
+    post_id = Column(Integer, ForeignKey('post.id'))
 
-class Like(Base):
-    __tablename__ = 'likes'
+class Follower(Base):
+    __tablename__ = 'follower'
     id = Column(Integer, primary_key=True)
-    photo_id = Column(Integer, nullable=False)
-    liker_id = Column(Integer, nullable=False)
-    timestamp = Column(String(250), nullable=False)
-    img_url = Column(String(250), nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship(User)
-    posts_id = Column(Integer, ForeignKey('posts.id'))
-    posts = relationship(Post)
+    user_from_id = Column(Integer, ForeignKey("user.id"))
+    user_to_id = Column(Integer, ForeignKey("user.id"))
 
-    def to_dict(self):
-        return {}
+
 ## Draw from SQLAlchemy base
 render_er(Base, 'diagram.png')
